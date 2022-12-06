@@ -153,12 +153,12 @@ struct user receive_presence() {
 				printf("closing fd %d\n", my_polls[0].fd);
 			}
 
-			struct user nextuser = receive_presence(udpsocket);
+			struct user nextuser = receive_presence();
 			int ctr = usercount + 1;
 			bool dne = true;
 
 			for(int i = 0; i < ctr; i++) {
-				if(strcmp(nextuser.name, userinfo[i].name) == 0 || strcmp(nextuser.name, "gsphicas") == 0) {
+				if(strcmp(nextuser.name, userinfo[i].name) == 0) {
 					dne = false;
 				}
 			}
@@ -172,7 +172,6 @@ struct user receive_presence() {
 
 	} 
 		return 0;
-
 }
 
 	

@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
 	addr.sin_port = htons (8221);
 	inet_pton(PF_INET, "10.10.13.255", &addr.sin_addr);
 
-	char *presmsg = "online gsphicas 8074";
+	char *presmsg = "gsphicas online 8074";
 	int len = strlen(presmsg) + 1;
 	int udpsocket = sendto(socketfd,presmsg,len,0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
 

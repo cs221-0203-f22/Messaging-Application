@@ -93,21 +93,19 @@ int main(int argc, char *argv[]) {
 
 struct user receive_presence() {
 	struct sockaddr_storage community_addr;
-	socklen_t community_addr_len;
 	char buff[BUF_SIZE];
+	socklen_t community_addr_len;
 	community_addr_len = sizeof(community_addr);
 	int nread = recvfrom(udpsocket,buff,BUF_SIZE,0,(struct sockaddr *) &community_addr, &community_addr_len);
 	char host[NI_MAXHOST], service[NI_MAXSERV];
-	int f = getnameinfo((struct sockaddr *) &community_addr, community_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
-	if(f == 0) {
-		printf("%s %s\n",buff,host);
-	}
+	getnameinfo((struct sockaddr *) &community_addr, community_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
 
 	char status[BUF_SIZE];
 	char user[BUF_SIZE];
 	char userport[BUF_SIZE];
 
 	sscanf(buff, "%s %s %s", status, user, userport);
+	printf(buff, "%s %s %s", status, user, userport);
 	struct user nextuser = usersetup(user, userport, host);
 	return nextuser;
 	}
@@ -140,6 +138,7 @@ struct user receive_presence() {
 			sendbroadcast = 0;
 		}
 		sendbroadcast++;
+		receive_presence();
 		
 		if(num_readable > 0) {
 			if(my_polls[0].revents & POLLIN) {
@@ -153,27 +152,8 @@ struct user receive_presence() {
 				printf("closing fd %d\n", my_polls[0].fd);
 			}
 
-			struct user nextuser = receive_presence();
-			int ctr = usercount + 1;
-			bool dne = true;
-
-			for(int i = 0; i < ctr; i++) {
-				if(strcmp(nextuser.name, userinfo[i].name) == 0) {
-					dne = false;
-				}
-			}
-
-			if(dne == true) {
-				userinfo[usercount] = nextuser;
-				usercount++;
-			}
-
 		}
 
 	} 
 		return 0;
 }
-
-	
-	
-

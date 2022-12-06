@@ -47,13 +47,13 @@ int main(int argc, char *argv[]) {
 
 	struct addrinfo *result;
 	int e = getaddrinfo(NULL, classport, &hints, &result);
-	if (e != 0) {
+	if(e != 0) {
 		printf("getaddrinfo: %s\n", gai_strerror(e));
 		exit(EXIT_FAILURE);
 	}
 
 	struct addrinfo *r;
-	for (r = result; r != NULL; r = r->ai_next) {
+	for(r = result; r != NULL; r = r->ai_next) {
 		socketfd = socket(r->ai_family, r->ai_socktype,r->ai_protocol);
 		if (socketfd == -1)
 			continue;
@@ -135,7 +135,7 @@ struct user receive_presence() {
 	while(!eof) {
 		int num_readable = poll(my_polls, num_polls, TIMEOUT);
 
-		if (sendbroadcast == 100) {
+		if(sendbroadcast == 100) {
 			sendto(socketfd,presmsg,len,0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
 			sendbroadcast = 0;
 		}
@@ -144,7 +144,7 @@ struct user receive_presence() {
 		if(num_readable > 0) {
 			if(my_polls[0].revents & POLLIN) {
 				int s = read(my_polls[0].fd, buf,sizeof(buf));
-				if (s == -1) {
+				if(s == -1) {
 					printf("read");
 					exit(-1);
 				}

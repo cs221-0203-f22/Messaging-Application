@@ -54,7 +54,6 @@ int main(int argc, char *argv[]) {
 
 	struct addrinfo *r;
 	for(r = result; r != NULL; r = r->ai_next) {
-
 		int setreuseaddr = 1;
 		int setbroadcast = 1;
 		socketfd = socket(r->ai_family, r->ai_socktype,r->ai_protocol);
@@ -86,26 +85,13 @@ int main(int argc, char *argv[]) {
 	addr.sin_port = htons (8221);
 	inet_pton(PF_INET, "10.10.13.255", &addr.sin_addr);
 
+//	char buf[BUF_SIZE];
+	struct sockaddr_storage stg;
+	memset(&addr, 0, sizeof(struct sockaddr_storage));
+//	ssize_t recvfrom(classport, buf ,0, (struct sockaddr *) &stg, &std_len);
+
 	char *presmsg = "gsphicas online 8074";
 	int udpsocket = sendto(socketfd,presmsg,strlen(presmsg) + 1,0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
-
-struct user receive_presence() {
-	struct sockaddr_storage community_addr;
-	char buff[BUF_SIZE];
-	socklen_t community_addr_len;
-	community_addr_len = sizeof(community_addr);
-	int nread = recvfrom(udpsocket,buff,BUF_SIZE,0,(struct sockaddr *) &community_addr, &community_addr_len);
-	char host[NI_MAXHOST], service[NI_MAXSERV];
-	getnameinfo((struct sockaddr *) &community_addr, community_addr_len, host, NI_MAXHOST, service, NI_MAXSERV, NI_NUMERICSERV);
-
-	char status[BUF_SIZE];
-	char user[BUF_SIZE];
-	char userport[BUF_SIZE];
-
-	sscanf(buff, "%s %s %s", status, user, userport);
-	struct user nextuser = usersetup(user, userport, host);
-	return nextuser;
-	}
 	
 	bool eof = false;
 	struct pollfd my_polls[NUM_POLLS];
@@ -120,10 +106,6 @@ struct user receive_presence() {
 	my_polls[1].fd = udpsocket;
 	my_polls[1].events = POLLIN;
 
-	struct user userinfo[64];
-	int usersocket[64];
-	int usercount = 0;
-
 	char buf[10];
 	int sendbroadcast = 0;
 	
@@ -135,7 +117,7 @@ struct user receive_presence() {
 			sendbroadcast = 0;
 		}
 		sendbroadcast++;
-		receive_presence();
+	
 		
 		if(num_readable > 0) {
 			if(my_polls[0].revents & POLLIN) {

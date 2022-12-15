@@ -54,17 +54,18 @@ int main(int argc, char *argv[]) {
 
 	struct addrinfo *r;
 	for(r = result; r != NULL; r = r->ai_next) {
+
+		int setreuseaddr = 1;
+		int setbroadcast = 1;
 		socketfd = socket(r->ai_family, r->ai_socktype,r->ai_protocol);
 		if (socketfd == -1)
 			continue;
 
-		int setreuseaddr = 1;
 		if(setsockopt(socketfd,SOL_SOCKET,SO_REUSEADDR,&setreuseaddr,sizeof(int)) != 0) {
 			perror("reuseaddr");
 			exit(-1);
 		}
 
-		int setbroadcast = 1;
 		if(setsockopt(socketfd,SOL_SOCKET,SO_BROADCAST, &setbroadcast, sizeof(int)) != 0) {
 			perror("broadcast");
 			exit(-1);
@@ -102,7 +103,6 @@ struct user receive_presence() {
 	char userport[BUF_SIZE];
 
 	sscanf(buff, "%s %s %s", status, user, userport);
-	printf(buff, "%s %s %s", status, user, userport);
 	struct user nextuser = usersetup(user, userport, host);
 	return nextuser;
 	}

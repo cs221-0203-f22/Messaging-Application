@@ -58,16 +58,14 @@ int main(int argc, char *argv[]) {
 		if (socketfd == -1)
 			continue;
 
-		int setreuseaddr = 1;;
-		setsockopt(socketfd,SOL_SOCKET,SO_REUSEADDR,&setreuseaddr,sizeof(int));
-		if(setsockopt(socketfd,SOL_SOCKET,SO_REUSEADDR,&setreuseaddr,sizeof(int))) {
+		int setreuseaddr = 1;
+		if(setsockopt(socketfd,SOL_SOCKET,SO_REUSEADDR,&setreuseaddr,sizeof(int)) != 0) {
 			perror("reuseaddr");
 			exit(-1);
 		}
 
 		int setbroadcast = 1;
-		setsockopt(socketfd,SOL_SOCKET,SO_BROADCAST, &setbroadcast, sizeof(int));
-		if(setsockopt(socketfd,SOL_SOCKET,SO_BROADCAST, &setbroadcast, sizeof(int))) {
+		if(setsockopt(socketfd,SOL_SOCKET,SO_BROADCAST, &setbroadcast, sizeof(int)) != 0) {
 			perror("broadcast");
 			exit(-1);
 		}
@@ -88,8 +86,7 @@ int main(int argc, char *argv[]) {
 	inet_pton(PF_INET, "10.10.13.255", &addr.sin_addr);
 
 	char *presmsg = "gsphicas online 8074";
-	int len = strlen(presmsg) + 1;
-	int udpsocket = sendto(socketfd,presmsg,len,0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
+	int udpsocket = sendto(socketfd,presmsg,strlen(presmsg) + 1,0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
 
 struct user receive_presence() {
 	struct sockaddr_storage community_addr;
@@ -134,7 +131,7 @@ struct user receive_presence() {
 		int num_readable = poll(my_polls, num_polls, TIMEOUT);
 
 		if(sendbroadcast == 100) {
-			sendto(socketfd,presmsg,len,0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
+			sendto(socketfd,presmsg,strlen(presmsg),0,(struct sockaddr*) &addr, sizeof(struct sockaddr_in));
 			sendbroadcast = 0;
 		}
 		sendbroadcast++;
